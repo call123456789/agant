@@ -1,6 +1,6 @@
 这个强大的智能代理能够帮你完成各种任务，解放你的双手。
 
-首先，请下载本项目的文件夹，获取所有必要的文件。
+首先，请下载所有.py文件，放进一个文件夹里
 
 访问 Kimi平台https://platform.moonshot.cn/console/api-keys
 登录并创建你的Kimi API。
