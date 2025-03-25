@@ -5,6 +5,8 @@
 访问 Kimi平台https://platform.moonshot.cn/console/api-keys
 登录并创建你的Kimi API。
 
+确保你已经安装python解释器
+
 打开 prepare.py 文件，并输入你创建的Kimi API密钥。
 
 最后，运行 my_agent.py 启动智能代理。
