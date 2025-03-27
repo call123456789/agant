@@ -1,8 +1,10 @@
 def clean_code(input_string=''):
-    if input_string.startswith("```python"):
-        input_string = input_string[len("```python"):].lstrip()
+    start = "```python"
+    end = "```"
+    start_index = input_string.find(start)
+    end_index = input_string.find(end, start_index + len(start))
     
-    if input_string.endswith("```"):
-        input_string = input_string[:-3].rstrip()
+    if start_index != -1 and end_index != -1:
+        return input_string[start_index + len(start):end_index].strip()
     
     return input_string
