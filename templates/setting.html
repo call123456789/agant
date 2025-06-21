@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API设置</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .setting-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        input[type="text"], input[type="password"], input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #6a11cb;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.1);
+        }
+        .btn-save {
+            background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.3s;
+        }
+        .btn-save:hover {
+            opacity: 0.9;
+        }
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="setting-container">
+        <h1><i class="fas fa-cog"></i> 设置API参数</h1>
+        <form id="setting-form">
+            <div class="form-group">
+                <label for="talk-model">对话模型 (talk-model)</label>
+                <input type="text" id="talk-model" name="talk-model" value="{{ config['talk-model'] }}">
+            </div>
+            <div class="form-group">
+                <label for="image-model">图像模型 (image-model)</label>
+                <input type="text" id="image-model" name="image-model" value="{{ config['image-model'] }}">
+            </div>
+            <div class="form-group">
+                <label for="embedding-model">嵌入模型 (embedding-model)</label>
+                <input type="text" id="embedding-model" name="embedding-model" value="{{ config['embedding-model'] }}">
+            </div>
+            <div class="form-group">
+                <label for="api_key">API密钥 (api_key)</label>
+                <input type="password" id="api_key" name="api_key" value="{{ config['api_key'] }}">
+            </div>
+            <div class="form-group">
+                <label for="base_url">基础URL (base_url)</label>
+                <input type="text" id="base_url" name="base_url" value="{{ config['base_url'] }}">
+            </div>
+            <div class="form-group">
+                <label for="temprature">温度 (temprature)</label>
+                <input type="number" step="0.1" id="temprature" name="temprature" value="{{ config['temprature'] }}">
+            </div>
+            <button type="submit" class="btn-save">保存设置</button>
+        </form>
+        <div id="status-message" class="status-message"></div>
+    </div>
+
+    <script>
+        document.getElementById('setting-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 收集表单数据
+            const formData = {
+                "talk-model": document.getElementById('talk-model').value,
+                "image-model": document.getElementById('image-model').value,
+                "embedding-model": document.getElementById('embedding-model').value,
+                "api_key": document.getElementById('api_key').value,
+                "base_url": document.getElementById('base_url').value,
+                "temprature": parseFloat(document.getElementById('temprature').value)
+            };
+            
+            // 发送保存请求
+            fetch('/save_setting', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const statusEl = document.getElementById('status-message');
+                statusEl.style.display = 'block';
+                
+                if (data.status === 'success') {
+                    statusEl.className = 'status-message success';
+                    statusEl.textContent = '设置保存成功！';
+                } else {
+                    statusEl.className = 'status-message error';
+                    statusEl.textContent = '保存失败: ' + (data.message || '未知错误');
+                }
+                
+                // 3秒后隐藏消息
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 3000);
+            })
+            .catch(error => {
+                console.error('保存失败:', error);
+                const statusEl = document.getElementById('status-message');
+                statusEl.style.display = 'block';
+                statusEl.className = 'status-message error';
+                statusEl.textContent = '保存失败: ' + error.message;
+            });
+        });
+    </script>
+</body>
+</html>

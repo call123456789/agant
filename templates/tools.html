@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI工具箱</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 复用index.html中的样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header h1 {
+            font-weight: 600;
+            font-size: 1.8rem;
+        }
+        
+        .header i {
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* 工具页面特有样式 */
+        .tools-container {
+            flex: 1;
+            padding: 25px 30px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            background: #fafbfd;
+        }
+        
+        .tool-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.15);
+        }
+        
+        .tool-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .tool-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #6a11cb;
+        }
+        
+        .tool-desc {
+            color: #666;
+            line-height: 1.6;
+            flex-grow: 1;
+            margin-bottom: 20px;
+        }
+        
+        .tool-btn {
+            padding: 10px 20px;
+            background: #f0f4ff;
+            border: none;
+            border-radius: 10px;
+            color: #6a11cb;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        
+        .tool-btn:hover {
+            background: #e4e9ff;
+        }
+
+        .btn-active {
+            background: #ffebee;
+            color: #e53935;
+        }
+
+        .btn-active:hover {
+            background: #ffcdd2;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-group .tool-btn {
+            flex: 1;
+        }
+        
+        .back-btn {
+            margin-left: auto;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-radius: 15px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .tools-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                height: 95vh;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <i class="fas fa-tools"></i>
+            <h1>AI 工具箱</h1>
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                返回聊天
+            </a>
+        </div>
+        
+        <div class="tools-container">
+            <!-- 代码执行器 -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-terminal"></i>
+                </div>
+                <h3 class="tool-title">代码执行器</h3>
+                <p class="tool-desc">执行多种编程语言的代码片段，实时查看运行结果和调试信息。</p>
+                <button class="tool-btn" data-tool="codeExecutor">
+                    <i class="fas fa-power-off"></i>
+                    <span>启用</span>
+                </button>
+            </div>
+            
+            <!-- 文档阅读器 -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h3 class="tool-title">文档阅读器</h3>
+                <p class="tool-desc">智能解析PDF/DOC文档，提供重点摘要和快速导航功能。</p>
+                <button class="tool-btn" data-tool="docReader">
+                    <i class="fas fa-power-off"></i>
+                    <span>启用</span>
+                </button>
+            </div>
+            
+            <!-- 图片分析器 -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-search-image"></i>
+                </div>
+                <h3 class="tool-title">图片分析器</h3>
+                <p class="tool-desc">识别图像内容，提取文字信息，分析场景和对象特征。</p>
+                <button class="tool-btn" data-tool="imageAnalyzer">
+                    <i class="fas fa-power-off"></i>
+                    <span>启用</span>
+                </button>
+            </div>
+            
+            <!-- 画家 -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <h3 class="tool-title">画家</h3>
+                <p class="tool-desc">根据文字描述生成高质量图像，支持多种艺术风格创作。</p>
+                <button class="tool-btn" data-tool="painter">
+                    <i class="fas fa-power-off"></i>
+                    <span>启用</span>
+                </button>
+            </div>
+            
+            <!-- 作家 -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-feather-alt"></i>
+                </div>
+                <h3 class="tool-title">作家</h3>
+                <p class="tool-desc">辅助创作文章、诗歌和故事，提供写作建议和灵感激发。</p>
+                <button class="tool-btn" data-tool="writer">
+                    <i class="fas fa-power-off"></i>
+                    <span>启用</span>
+                </button>
+            </div>
+            
+            <!-- 知识库检索 -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3 class="tool-title">知识库检索</h3>
+                <p class="tool-desc">快速检索自定义知识库，获取精准答案和相关信息。</p>
+                <div class="btn-group">
+                    <button class="tool-btn" data-tool="knowledgeBase">
+                        <i class="fas fa-power-off"></i>
+                        <span>启用</span>
+                    </button>
+                    <button class="tool-btn" id="buildKnowledgeBtn">
+                        <i class="fas fa-cogs"></i>
+                        构建知识库
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 音频识别器 -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-microphone-alt"></i>
+                </div>
+                <h3 class="tool-title">音频识别器</h3>
+                <p class="tool-desc">识别语音内容并转文字，支持多语言和方言识别。</p>
+                <button class="tool-btn" data-tool="audioRecognizer">
+                    <i class="fas fa-power-off"></i>
+                    <span>启用</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化工具状态
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为所有工具按钮添加点击事件
+            document.querySelectorAll('[data-tool]').forEach(button => {
+                const toolName = button.dataset.tool;
+                
+                // 从localStorage加载状态
+                const savedState = localStorage.getItem(toolName);
+                if (savedState === 'enabled') {
+                    toggleButtonState(button, true);
+                }
+                
+                // 添加点击事件
+                button.addEventListener('click', function() {
+                    const isActive = this.classList.contains('btn-active');
+                    toggleButtonState(this, !isActive);
+                    
+                    // 保存状态到localStorage
+                    localStorage.setItem(toolName, isActive ? 'disabled' : 'enabled');
+                });
+            });
+            
+            // 知识库构建按钮事件
+            document.getElementById('buildKnowledgeBtn').addEventListener('click', function() {
+                // 实际项目中替换为真实URL
+                window.location.href = '/build-knowledge'; 
+            });
+        });
+        
+        // 切换按钮状态函数
+        function toggleButtonState(button, enable) {
+            const icon = button.querySelector('i');
+            const textSpan = button.querySelector('span');
+            
+            if (enable) {
+                button.classList.add('btn-active');
+                icon.classList.replace('fa-power-off', 'fa-ban');
+                textSpan.textContent = '停用';
+            } else {
+                button.classList.remove('btn-active');
+                icon.classList.replace('fa-ban', 'fa-power-off');
+                textSpan.textContent = '启用';
+            }
+        }
+    </script>
+</body>
+</html>
