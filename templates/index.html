@@ -469,6 +469,55 @@
             }
         }
 
+        .btn-record {
+            background: white;
+            color: #e74c3c;
+            border: 2px solid #ffd0d0;
+        }
+        
+        .btn-record:hover {
+            background: #fff5f5;
+        }
+        
+        .btn-record.recording {
+            background: #e74c3c;
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+        
+        /* 录音指示器样式 */
+        .recording-indicator {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: #fff0f0;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #e74c3c;
+            border: 1px solid #ffd0d0;
+        }
+        
+        .recording-animation {
+            width: 12px;
+            height: 12px;
+            background: #e74c3c;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
     </style>
 </head>
 <body>
@@ -512,6 +561,10 @@
             </div>
             
             <div class="buttons">
+                <button class="btn btn-record" id="recordBtn">
+                    <i class="fas fa-microphone" id="micIcon"></i>
+                    <span id="recordText">开始录音</span>
+                </button>
                 <label class="btn btn-upload">
                     <i class="fas fa-paperclip"></i>
                     选择文件
@@ -527,12 +580,16 @@
     </div>
 
     <script>
+        const recordBtn = document.getElementById('recordBtn');
+        const micIcon = document.getElementById('micIcon');
+        const recordText = document.getElementById('recordText');
         const fileInput = document.getElementById('fileInput');
         const fileList = document.getElementById('fileList');
         const sendBtn = document.getElementById('sendBtn');
         const messageInput = document.getElementById('messageInput');
         const chatBox = document.getElementById('chatBox');
         
+        let isRecording = false;
         let selectedFiles = [];
         
         // 配置marked.js
@@ -764,6 +821,105 @@
         setTimeout(() => {
             renderMath(document.body);
         }, 500);
+
+        // 录音按钮点击事件
+        recordBtn.addEventListener('click', async () => {
+            if (!isRecording) {
+                // 开始录音
+                try {
+                    // 调用您已实现的开始录音函数
+                    await startRecording();
+                    
+                    // 更新UI状态
+                    isRecording = true;
+                    micIcon.classList.remove('fa-microphone');
+                    micIcon.classList.add('fa-stop-circle');
+                    recordText.textContent = '停止录音';
+                    recordBtn.classList.add('recording');
+                    
+                    // 添加录音指示器
+                    const indicator = document.createElement('div');
+                    indicator.id = 'recordingIndicator';
+                    indicator.className = 'recording-indicator';
+                    indicator.innerHTML = `
+                        <div class="recording-animation"></div>
+                        <span>录音中...</span>
+                    `;
+                    document.querySelector('.input-area').prepend(indicator);
+                    
+                } catch (error) {
+                    console.error('录音启动失败:', error);
+                    alert('无法启动录音，请检查麦克风权限');
+                }
+            } else {
+                // 停止录音
+                try {
+                    // 调用您已实现的停止录音函数
+                    const audioFile = await stopRecording();
+                    
+                    // 更新UI状态
+                    isRecording = false;
+                    micIcon.classList.remove('fa-stop-circle');
+                    micIcon.classList.add('fa-microphone');
+                    recordText.textContent = '开始录音';
+                    recordBtn.classList.remove('recording');
+                    
+                    // 移除录音指示器
+                    const indicator = document.getElementById('recordingIndicator');
+                    if (indicator) indicator.remove();
+                    
+                    // 将录音文件添加到文件列表
+                    selectedFiles = [audioFile];
+                    updateFileList();
+                    
+                } catch (error) {
+                    console.error('录音停止失败:', error);
+                }
+            }
+        });
+
+        // 开始录音函数
+        async function startRecording() {
+            try {
+                const response = await fetch('/start_recording', {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                if (data.status === 'success') {
+                    return true;
+                } else {
+                    throw new Error(data.message || '启动录音失败');
+                }
+            } catch (error) {
+                console.error('录音启动失败:', error);
+                throw error;
+            }
+        }
+
+        // 停止录音并返回录音文件
+        async function stopRecording() {
+            try {
+                const response = await fetch('/stop_recording', {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                if (data.status === 'success') {
+                    // 创建文件对象返回给前端
+                    return new File([""], data.filename, {
+                        type: 'audio/wav',
+                        lastModified: Date.now()
+                    });
+                } else {
+                    throw new Error(data.message || '停止录音失败');
+                }
+            } catch (error) {
+                console.error('录音停止失败:', error);
+                throw error;
+            }
+        }
+
     </script>
 </body>
 </html>
