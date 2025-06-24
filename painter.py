@@ -3,7 +3,7 @@ from openai import OpenAI
 from datetime import datetime
 class Painter:
     def __init__(self):
-        with open('API.json', 'r') as file:
+        with open('set.json', 'r') as file:
             config = json.load(file)
         self.model = config.get('image-model')
         self.api = config.get('api_key')
@@ -36,7 +36,7 @@ def paint(prompt):
         painter.response(prompt, 'user/'+now+'.png')
     except Exception as e:
         return str(e)
-    return '工具使用成功'
+    return '成功生成图片并保存为' + ' user/'+now+'.png'
 
 if __name__ == '__main__':
     paint('一只猫')

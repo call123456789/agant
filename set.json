@@ -1,0 +1,10 @@
+{
+    "talk-model": "doubao-1-5-pro-32k-250115",
+    "image-model": "doubao-seedream-3-0-t2i-250415",
+    "vision-model": "doubao-1.5-vision-pro-250328",
+    "embedding-model": "doubao-embedding-text-240715",
+    "api_key": "9218499a-4ca9-4538-951b-c693911cfe46",
+    "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+    "temprature": 1,
+    "top_p": 0.8
+}

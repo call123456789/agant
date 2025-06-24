@@ -7,6 +7,10 @@ from exec_code import exec_code
 from reader import extract_text
 from watcher import watch
 from knowledge import *
+from prepare import install
+from speech import recognize_speech
+from get_url import *
+
 class LLM:
     def __init__(self, task = "你是个好助手", tools = []):
         self.task = task
@@ -14,7 +18,7 @@ class LLM:
         self.messages = [ {"role": "system", "content": task} ]
 
         # 加载 JSON 文件
-        with open('API.json', 'r') as file:
+        with open('set.json', 'r') as file:
             config = json.load(file)
 
         # 获取 API 密钥
@@ -22,6 +26,7 @@ class LLM:
         self.api = config.get('api_key')
         self.base_url = config.get('base_url')
         self.temprature = config.get('temprature')
+        self.top_p = config.get('top_p')
     def add(self, content, role = "user"):
         self.messages.append({"role": role, "content": content})
     def response(self, context="None"):
@@ -88,13 +93,18 @@ class LLM:
                     break
 
                 for tool_call in tool_calls:
-                    yield '正在调用工具%s\n' % tool_call['function']['name']
+                    yield '正在调用工具`%s`\n' % tool_call['function']['name']
                     args = tool_call['function']['arguments']
                     if isinstance(args,str):
                         args = eval(args)
-                    result = eval(tool_call['function']['name'])(list(args.values())[0])
+                    try:
+                        result = eval(tool_call['function']['name'])(list(args.values())[0])
+                    except Exception as e:
+                        result = str(e)
                     self.messages.append({"role":"tool","tool_call_id": tool_call['id'],"content": result})
-                    yield '工具%s调用结果为：%s\n' % (tool_call['function']['name'],result)
+                    if len(result) >201:
+                        result = result[:200] + '...'
+                    yield '工具`%s`调用结果为：%s\n' % (tool_call['function']['name'],result)
             
         except Exception as e:
             print(f"请求失败: {e}")

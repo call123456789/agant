@@ -17,8 +17,6 @@ def extract_text(filename):
         FileNotFoundError: 文件不存在
     """
     # 检查文件是否存在
-    if 'resources/knowledge/user' not in filename:
-        filename = 'resources/uploads/'+ filename
     if not os.path.isfile(filename):
         raise FileNotFoundError(f"文件不存在: {filename}")
     

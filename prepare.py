@@ -12,7 +12,7 @@ def install(package):
     
     if result.returncode == 0:
         print(f"{package} 已存在，跳过安装")
-        return
+        return f"{package} 已存在，跳过安装"
     
     try:
         #使用这些命令安装库
@@ -29,12 +29,16 @@ def install(package):
             package
         ], check=True)
         print(f"{package} 已成功安装")
+        return f"{package} 已成功安装"
     except subprocess.CalledProcessError as e:
         print(f"安装 {package} 时出错: {e}")
+        return f"安装 {package} 时出错: {e}"
 def prepare():
     install("openai")
     install("requests")
     install("python-docx")
+    install("speech_recognition")
+    install("pyaudio")
     os.makedirs("resources", exist_ok=True)
     os.makedirs("resources/knowledge",exist_ok=True)
     os.makedirs("resources/knowledge/data",exist_ok=True)

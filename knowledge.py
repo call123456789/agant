@@ -4,7 +4,7 @@ import json, os, re
 from datetime import datetime
 from reader import extract_text
 def create_embeddings(input):
-    with open('API.json', 'r') as file:
+    with open('set.json', 'r') as file:
         config = json.load(file)
     client = OpenAI(
         base_url=config.get('base_url'),
@@ -34,7 +34,7 @@ def split_into_chunks(sentence_list, break_indices):
     semantic_chunks.append(". ".join(sentence_list[current_start_index:]))
     return semantic_chunks
 
-def semantic_search(query, k=2):
+def semantic_search(query, k=6):
     text_chunks = []
     embeddings = []
     data_dir = 'resources/knowledge/data'
@@ -58,15 +58,14 @@ def semantic_search(query, k=2):
     top_indices = [index for index, _ in similarity_scores[:k]]
     ans_list = [text_chunks[index] for index in top_indices]
     ans_str = '知识库中相关信息如下：\n'
-    for i in ans_list:
-        ans_str += i + '\n'
+    for i, j in enumerate(ans_list):
+        ans_str += str(i+1)+'、' + j + '\n'
     return ans_str
 
 
 def process_text(text):
 
-    sentences = re.split(r'[。\.\n]', text)
-    print(sentences)
+    sentences = re.split(r'[。\.\n] ', text)
     # 去除空字符串和前后空格
     sentences = [sentence.strip() for sentence in sentences if sentence.strip()]
     embeddings = create_embeddings(sentences)

@@ -38,10 +38,9 @@ def compress_image(image_path, max_size_kb=900, max_width=1024):
 
 
 def watch(args):
-    file = "resources/uploads/"+args[0]
+    file = args[0]
     base64_image = compress_image(file, max_size_kb=900, max_width=1024)
     llm = LLM()
-    llm.model = "doubao-1.5-vision-pro-250328"
     messages={
         "role": "user",
         "content": [
@@ -59,4 +58,4 @@ def watch(args):
             
     return response
 if __name__ == '__main__':
-    print(watch(('20250621_005136_9f862a75_截屏2025-06-21 00.49.17.png','分析一下这幅图的风格')))
+    print(watch(('user/2025-06-23 15:25:49.png','分析一下这幅图的风格')))

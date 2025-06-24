@@ -1,6 +1,7 @@
 def exec_code(code: str):
-    print("执行代码:")
-    print(code) # 打印代码便于调试
+    if 'python' in code.split('\n')[0]:
+        code = '\n'.join(code.split('\n')[1:-1])
+    
     try:
         namespace = {} 
         exec(code, namespace)

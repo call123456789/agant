@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, jsonify, Response, stream_wit
 import os
 import uuid
 import datetime
+import pyaudio
+import wave
+from threading import Lock
 from llm2 import LLM
 from prompt import planner_prompt
 from tool import tools
@@ -12,11 +15,26 @@ app.config['UPLOAD_FOLDER'] = 'resources/uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 knowledge_files = {}
 app.config['KNOWLEDGE_BASE_FOLDER'] = 'resources/knowledge/user'
-API_CONFIG_PATH = 'API.json'
+API_CONFIG_PATH = 'set.json'
 
 # 存储对话历史
 conversations = []
 agent = LLM(task= planner_prompt, tools=tools)
+
+# 添加全局变量存储录音状态
+recording_status = {
+    "is_recording": False,
+    "stream": None,
+    "frames": [],
+    "lock": Lock(),
+    "filename": None
+}
+
+# 录音参数配置
+FORMAT = pyaudio.paInt16
+CHANNELS = 1
+RATE = 44100
+CHUNK = 1024
 
 @app.route('/')
 def index():
@@ -31,6 +49,8 @@ def send_message():
     saved_files = []
     for file in files:
         if file.filename:
+            if file.filename.find('recording') != 0 and 'wav' in file.filename:
+                continue
             filename = f"{datetime.now().strftime("%H:%M:%S")}_{uuid.uuid4().hex[:8]}_{file.filename}"
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             saved_files.append(filename)
@@ -63,6 +83,10 @@ def stream_ai_response():
     
     # 将文件字符串转换为列表
     files_list = files.split(',') if files else []
+    for id,file in enumerate(files_list):
+        if file.find('recording') != 0 and 'wav' in file:
+            files_list[id] = file[file.find('recording'):]
+    files_list = ['resources/uploads/' + file for file in files_list]
     if files_list:
         user_input += f"\n用户上传了 {len(files_list)} 个文件：{',  '.join(files_list)}"
     
@@ -117,7 +141,7 @@ def upload_knowledge():
         saved_files.append(file_info)
         
         # 这里调用你的知识库处理代码
-        json_name = process_text(extract_text(file_path))
+        json_name = process_text(extract_text('resources/knowledge/user/'+file_path))
         
         # 模拟处理完成（实际应用中应异步处理）
         knowledge_files[filename]['status'] = 'completed'
@@ -201,7 +225,7 @@ def save_setting():
     
     # 验证数据
     required_keys = ['talk-model', 'image-model', 'embedding-model', 
-                     'api_key', 'base_url', 'temprature']
+                     'api_key', 'base_url', 'temprature', 'top_p']
     if not all(key in data for key in required_keys):
         return jsonify({'status': 'error', 'message': '缺少必要的参数'}), 400
     
@@ -212,6 +236,83 @@ def save_setting():
         return jsonify({'status': 'success'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+    
+
+@app.route('/start_recording', methods=['POST'])
+def start_recording():
+    """开始录音"""
+    with recording_status["lock"]:
+        if recording_status["is_recording"]:
+            return jsonify({"status": "error", "message": "Already recording"}), 400
+        
+        # 生成唯一的文件名
+        filename = f"recording_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}.wav"
+        recording_status["filename"] = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        recording_status["frames"] = []
+        recording_status["is_recording"] = True
+        
+        # 初始化音频流
+        p = pyaudio.PyAudio()
+        recording_status["stream"] = p.open(
+            format=FORMAT,
+            channels=CHANNELS,
+            rate=RATE,
+            input=True,
+            frames_per_buffer=CHUNK
+        )
+        
+        # 启动录音线程
+        import threading
+        threading.Thread(target=record_audio).start()
+        
+        return jsonify({
+            "status": "success", 
+            "message": "Recording started",
+            "filename": filename
+        })
+
+def record_audio():
+    """录音线程函数"""
+    print("Recording started...")
+    while recording_status["is_recording"]:
+        with recording_status["lock"]:
+            if recording_status["is_recording"] and recording_status["stream"]:
+                data = recording_status["stream"].read(CHUNK)
+                recording_status["frames"].append(data)
+    print("Recording stopped")
+
+@app.route('/stop_recording', methods=['POST'])
+def stop_recording():
+    """停止录音并保存文件"""
+    with recording_status["lock"]:
+        if not recording_status["is_recording"]:
+            return jsonify({"status": "error", "message": "Not recording"}), 400
+        
+        # 停止录音
+        recording_status["is_recording"] = False
+        
+        # 关闭音频流
+        if recording_status["stream"]:
+            recording_status["stream"].stop_stream()
+            recording_status["stream"].close()
+            recording_status["stream"] = None
+        
+        # 保存录音文件
+        wf = wave.open(recording_status["filename"], 'wb')
+        wf.setnchannels(CHANNELS)
+        wf.setsampwidth(pyaudio.PyAudio().get_sample_size(FORMAT))
+        wf.setframerate(RATE)
+        wf.writeframes(b''.join(recording_status["frames"]))
+        wf.close()
+        
+        filename = os.path.basename(recording_status["filename"])
+        recording_status["frames"] = []
+        
+        return jsonify({
+            "status": "success", 
+            "message": "Recording saved",
+            "filename": filename
+        })
 
 if __name__ == '__main__':
     app.run(debug=True)
