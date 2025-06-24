@@ -1,8 +1,0 @@
-{
-    "talk-model": "doubao-1-5-pro-32k-250115",
-    "image-model": "doubao-seedream-3-0-t2i-250415",
-    "embedding-model": "doubao-embedding-text-240715",
-    "api_key": "",
-    "base_url": "https://ark.cn-beijing.volces.com/api/v3",
-    "temprature": 0.3
-}
