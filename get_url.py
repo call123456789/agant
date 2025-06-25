@@ -60,27 +60,27 @@ def getHtml(url, timeout=10, headless=True):
         print(f"获取页面时出错: {str(e)}")
         if 'driver' in locals():
             driver.quit()
-        return None
+        return str(e)
 
 
 def get_url(query):
-    url = "https://www.baidu.com/s?wd=" + query
-    response = getHtml(url)
+    url = "https://www.baidu.com/s?wd=" + query  #百度查询网址
+    response = getHtml(url=url)
     soup = BeautifulSoup(response, 'html.parser')
-
     li = soup.find_all("div", attrs={"class":"result c-container xpath-log new-pmd"})
     urls = []
     for i in li:
-        urls.append(i.attrs['mu'])
-    ans = '网站搜寻信息如下：\n'
-    for i in urls[:min(len(urls),3)]:
-        str = getHtml(i)
-        soup = BeautifulSoup(str, 'html.parser')
-        ans_list = soup.text.split('\n')
-        for txt in ans_list:
-            if len(txt) >0:
-                ans += txt+'\n'
+        urls.append(i.attrs['mu'])  #找到所有搜索出来的网址
+    return '\n'+'\n'.join(urls[:min(len(urls),2)])
 
+def get_urltxt(url):
+    html = getHtml(url)
+    soup = BeautifulSoup(html, 'html.parser')
+    ans = '该网页信息如下：'
+    ans_list = soup.text.split('\n')     #去除多余的空行
+    for txt in ans_list:
+        if len(txt) >0:
+            ans += txt+'\n'
     return ans
 
 if __name__ == '__main__':

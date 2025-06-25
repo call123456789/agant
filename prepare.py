@@ -39,6 +39,8 @@ def prepare():
     install("python-docx")
     install("speech_recognition")
     install("pyaudio")
+    install("pdfplumber")
+    install("selenium")             #安装所需要的库
     os.makedirs("resources", exist_ok=True)
     os.makedirs("resources/knowledge",exist_ok=True)
     os.makedirs("resources/knowledge/data",exist_ok=True)

@@ -44,6 +44,7 @@ class LLM:
                     messages=self.messages,
                     temperature=self.temprature,
                     tools=self.tools,
+                    top_p=self.top_p,
                     stream=True
                 )
                 

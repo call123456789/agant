@@ -44,7 +44,7 @@ def watch(args):
     messages={
         "role": "user",
         "content": [
-            {"type": "text", "text": args[1]},
+            {"type": "text", "text": args[1]+'注意输出格式，如果有数学算式，要在前后加$$，而不用()'},
             {
                 "type": "image_url",
                 "image_url": {

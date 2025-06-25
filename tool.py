@@ -4,7 +4,7 @@ tools =[
         "type":"function",
         "function":{
             "name": "exec_code",  #这是工具名字
-            "description":"执行一段python程序，在没有合适工具且python代码可以完成时使用", #这是工具的作用
+            "description":"执行一段python程序，在没有合适工具且python代码可以完成时使用，注意执行的代码中不要有任何需要输入的东西，即不要出现input！", #这是工具的作用
             "parameters":{    #这是该工具的参数信息
                 "type":"object",
                 "properties": {   
@@ -130,13 +130,31 @@ tools =[
         "type":"function",
         "function":{
             "name": "get_url",  #这是工具名字
-            "description":"从互联网上搜索信息", #这是工具的作用
+            "description":"从互联网上搜索与某个问题相关的网址", #这是工具的作用
             "parameters":{    #这是该工具的参数信息
                 "type":"object",
                 "properties": {   
                     "prompt":{
                         "type":"string",
-                        "description":"要搜索的内容描述"
+                        "description":"要搜索的某个问题"
+                    }
+                },
+                "required": ["prompt"]
+            }
+        },
+        "strict": True
+    },
+    {
+        "type":"function",
+        "function":{
+            "name": "get_urltxt",  #这是工具名字
+            "description":"通过某个网址，获取对应网页上的文本信息", #这是工具的作用
+            "parameters":{    #这是该工具的参数信息
+                "type":"object",
+                "properties": {   
+                    "prompt":{
+                        "type":"string",
+                        "description":"某个网址"
                     }
                 },
                 "required": ["prompt"]

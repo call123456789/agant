@@ -9,6 +9,7 @@ from llm2 import LLM
 from prompt import planner_prompt
 from tool import tools
 from knowledge import *
+from filter import SensitiveFilter
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'resources/uploads'
@@ -35,6 +36,8 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 CHUNK = 1024
+
+filter = SensitiveFilter()
 
 @app.route('/')
 def index():
@@ -78,6 +81,7 @@ def send_message():
 def stream_ai_response():
     """流式传输AI响应"""
     user_input = request.args.get('user_input', '')
+    user_input = filter.filter(user_input,'max_match')  #敏感词过滤
     files = request.args.get('files', '')
     ai_msg_id = request.args.get('ai_msg_id', '')
     
@@ -141,7 +145,7 @@ def upload_knowledge():
         saved_files.append(file_info)
         
         # 这里调用你的知识库处理代码
-        json_name = process_text(extract_text('resources/knowledge/user/'+file_path))
+        json_name = process_text(extract_text(file_path))
         
         # 模拟处理完成（实际应用中应异步处理）
         knowledge_files[filename]['status'] = 'completed'
@@ -224,7 +228,7 @@ def save_setting():
     data = request.get_json()
     
     # 验证数据
-    required_keys = ['talk-model', 'image-model', 'embedding-model', 
+    required_keys = ['talk-model', 'image-model', 'embedding-model','vision-model',
                      'api_key', 'base_url', 'temprature', 'top_p']
     if not all(key in data for key in required_keys):
         return jsonify({'status': 'error', 'message': '缺少必要的参数'}), 400

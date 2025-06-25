@@ -64,22 +64,22 @@ def semantic_search(query, k=6):
 
 
 def process_text(text):
-
-    sentences = re.split(r'[。\.\n] ', text)
     # 去除空字符串和前后空格
+    sentences = re.split(r'[。\.\n] ', text)
     sentences = [sentence.strip() for sentence in sentences if sentence.strip()]
+    #生成句子向量
     embeddings = create_embeddings(sentences)
-
+    #计算相似度
     similarities = [cosine_similarity(embeddings[i].reshape(1, -1), embeddings[i + 1].reshape(1, -1))[0][0] for i in range(len(embeddings) - 1)]
-
+    #根据相似度计算分段点
     breakpoints = compute_breakpoints(similarity_scores=similarities, threshold=90)
-
+    #根据分段点进行分段
     chunks = split_into_chunks(sentence_list=sentences, break_indices=breakpoints)
-
+    #为每段生成段落向量
     chunks_embeddings = create_embeddings(chunks)
-
+    #把文本和向量打包
     dict = {'words':chunks ,'embeddings': [emb.tolist() for emb in chunks_embeddings]}
-
+    #存储在本地
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     filename = 'resources/knowledge/data/' + now + '.json'
     with open(filename, 'w', encoding='utf-8') as f:

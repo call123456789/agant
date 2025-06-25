@@ -19,13 +19,13 @@ class Painter:
             prompt=prompt,
             model=self.model,
             response_format="url",
-            size="750x380",
+            size="1000x680",
         )
-        image_url = resp.data[0].url
+        image_url = resp.data[0].url       #获取图片URL
         headers = {"User-Agent": "Mozilla/5.0 "
         "(Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"}
-        response = requests.get(image_url, headers=headers, timeout=30)
+        response = requests.get(image_url, headers=headers, timeout=30)    #下载图片到本地
         with open(filename, "wb") as f:
             f.write(response.content)
         
