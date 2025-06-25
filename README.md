@@ -52,8 +52,8 @@ graph TD
 1. 安装Python 3.8+
 2. 克隆项目仓库：
    ```bash
-   git clone https://github.com/yourusername/ai-assistant.git
-   cd ai-assistant
+   git clone https://github.com/call123456789/agant.git
+   cd agant
    ```
 3. 安装依赖：
    ```bash
@@ -72,8 +72,8 @@ graph TD
     "embedding-model": "your-embedding-model",
     "api_key": "your-api-key",
     "base_url": "your-base-url",
-    "temprature": 0.7,
-    "top_p": 0.9
+    "temprature": ,
+    "top_p": 
 }
 ```
 
@@ -173,8 +173,8 @@ python main.py
 | embedding-model | string | 嵌入生成模型 | - |
 | api_key | string | API访问密钥 | - |
 | base_url | string | API基础URL | - |
-| temprature | float | 生成多样性控制 | 0.7 |
-| top_p | float | 核采样概率阈值 | 0.9 |
+| temprature | float | 生成多样性控制 | - |
+| top_p | float | 核采样概率阈值 | - |
 
 ## 注意事项
 
@@ -182,16 +182,3 @@ python main.py
 2. 确保配置正确的API密钥和模型名称
 3. 知识库文件处理可能需要较长时间（大文件）
 4. 语音识别功能需要麦克风权限
-
-## 贡献指南
-
-欢迎提交Issue和Pull Request：
-1. Fork项目仓库
-2. 创建特性分支 (`git checkout -b feature/your-feature`)
-3. 提交更改 (`git commit -am 'Add some feature'`)
-4. 推送到分支 (`git push origin feature/your-feature`)
-5. 创建Pull Request
-
-## 许可证
-
-本项目采用 [MIT License](LICENSE)
