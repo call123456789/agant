@@ -173,8 +173,8 @@ python main.py
 | embedding-model | string | 嵌入生成模型 | - |
 | api_key | string | API访问密钥 | - |
 | base_url | string | API基础URL | - |
-| temprature | float | 生成多样性控制 | - |
-| top_p | float | 核采样概率阈值 | - |
+| temprature | float | 生成多样性控制 | 0.9 |
+| top_p | float | 核采样概率阈值 | 0.9 |
 
 ## 注意事项
 
