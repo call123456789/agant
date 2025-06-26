@@ -1,0 +1,7 @@
+openai
+requests
+python-docx
+SpeechRecognition
+PyAudio
+pdfplumber
+selenium
