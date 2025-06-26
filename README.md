@@ -62,9 +62,9 @@ graph TD
 
 ### 创建API
 
-1. 在火山引擎官网https://www.volcengine.com/创建API
+1. 在火山引擎官网创建API https://www.volcengine.com/
 2. 开通文本、语音、视觉、向量模型
-具体步骤见《用户手册.docx》
+具体步骤见[《用户手册.docx》](用户手册.docx)
 
 ### 运行项目
 
