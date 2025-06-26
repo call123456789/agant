@@ -5,6 +5,6 @@
     "embedding-model": "doubao-embedding-text-240715",
     "api_key": "",
     "base_url": "https://ark.cn-beijing.volces.com/api/v3",
-    "temprature": 1,
-    "top_p": 0.8
+    "temprature": 0.9,
+    "top_p": 0.9
 }
