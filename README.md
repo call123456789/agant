@@ -52,7 +52,7 @@ graph TD
 1. 安装Python 3.8+
 2. 克隆项目仓库：
    ```bash
-   git clone https://github.com/call123456789/agant.git
+   git clone https://github.com/call123456789/agent.git
    cd agant
    ```
 3. 安装依赖：
