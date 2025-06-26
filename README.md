@@ -60,22 +60,11 @@ graph TD
    python prepare.py
    ```
 
-### 配置文件
+### 创建API
 
-在项目根目录创建 `set.json` 文件，包含以下内容：
-
-```json
-{
-    "talk-model": "your-talk-model",
-    "image-model": "your-image-model",
-    "vision-model": "your-vision-model",
-    "embedding-model": "your-embedding-model",
-    "api_key": "your-api-key",
-    "base_url": "your-base-url",
-    "temprature": ,
-    "top_p": 
-}
-```
+1. 在火山引擎官网https://www.volcengine.com/创建API
+2. 开通文本、语音、视觉、向量模型
+具体步骤见《用户手册.docx》
 
 ### 运行项目
 
@@ -84,6 +73,7 @@ python main.py
 ```
 
 访问 `http://127.0.0.1:5000` 开始使用
+点击设置，填入创建的API、服务器URL、各模型的名称等信息
 
 ## 主要模块说明
 
